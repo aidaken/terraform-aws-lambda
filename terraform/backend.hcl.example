@@ -1,0 +1,5 @@
+bucket         = "tf-portfolio-tfstate-***-us-east-2"
+key            = "terraform-aws-lambda/dev/terraform.tfstate"
+region         = "us-east-2"
+dynamodb_table = "tf-portfolio-tfstate-locks"
+encrypt        = true

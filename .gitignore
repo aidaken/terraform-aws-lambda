@@ -1,0 +1,16 @@
+**/.terraform/
+**/.terraform.lock.hcl
+**/terraform.tfstate
+**/terraform.tfstate.backup
+**/*.tfvars
+*.log
+
+out.json
+response.json
+
+lambda/dist/
+
+.DS_Store
+.vscode/
+.idea/
+terraform/backend.hcl

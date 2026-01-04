@@ -1,0 +1,47 @@
+┌─────────────────────────────────────────────────────────────────┐
+│                         Developer                                │
+│                    (terraform apply)                             │
+└────────────────────────────┬────────────────────────────────────┘
+                             │
+                             ↓
+┌─────────────────────────────────────────────────────────────────┐
+│                    Terraform State Backend                       │
+│                                                                   │
+│  ┌──────────────────────┐      ┌─────────────────────────┐     │
+│  │  S3 Bucket           │      │  DynamoDB Table         │     │
+│  │  (state storage)     │◄────►│  (state locking)        │     │
+│  │  - Versioned         │      │  - Prevents concurrent  │     │
+│  │  - Encrypted         │      │    modifications        │     │
+│  └──────────────────────┘      └─────────────────────────┘     │
+└─────────────────────────────────────────────────────────────────┘
+                             │
+                             ↓
+┌─────────────────────────────────────────────────────────────────┐
+│                       AWS Resources                              │
+│                                                                   │
+│  ┌────────────────────────────────────────────────────┐         │
+│  │  IAM Role: tf-portfolio-lambda-exec                │         │
+│  │  └─ Attached Policy: tf-portfolio-lambda-logs      │         │
+│  │     └─ Permissions:                                │         │
+│  │        • logs:CreateLogGroup (defensive)           │         │
+│  │        • logs:CreateLogStream (scoped)             │         │
+│  │        • logs:PutLogEvents (scoped)                │         │
+│  └────────────────────────────────────────────────────┘         │
+│                             │                                     │
+│                             ↓                                     │
+│  ┌────────────────────────────────────────────────────┐         │
+│  │  Lambda Function: tf-portfolio-hello               │         │
+│  │  • Runtime: Python 3.12                            │         │
+│  │  • Memory: 128 MB                                  │         │
+│  │  • Timeout: 3 seconds                              │         │
+│  │  • Environment: SERVICE=tf-portfolio-hello         │         │
+│  └────────────────────────────────────────────────────┘         │
+│                             │                                     │
+│                             ↓                                     │
+│  ┌────────────────────────────────────────────────────┐         │
+│  │  CloudWatch Log Group                              │         │
+│  │  /aws/lambda/tf-portfolio-hello                    │         │
+│  │  • Retention: 7 days                               │         │
+│  │  • Explicit creation (not auto-generated)          │         │
+│  └────────────────────────────────────────────────────┘         │
+└─────────────────────────────────────────────────────────────────┘
